@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import functools
 
 
 class Net(nn.Module):
@@ -16,8 +17,21 @@ class Net(nn.Module):
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-        x = x.view(-1, 320)
+        batch, _, _, _ = x.data.shape
+        x = x.view(batch, 320)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+        # IF CIFAR10 use this: return x
+
+    def _count_parameters(self, shape):
+        return functools.reduce(lambda a, b: a * b, shape)
+
+    def count_parameters(self):
+        return sum([self._count_parameters(p.data.shape) for p in self.parameters()])
+
+    def calc_loss(self, y, t):
+        y = F.log_softmax(y)
+        loss = F.nll_loss(y, t, weight=None, size_average=True)
+        return loss
