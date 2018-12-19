@@ -96,7 +96,7 @@ class Cifar10Trainer(object):
             loss = self.model.calc_loss(y, t)
             loss.backward()
             self.optimizer.step()
-            sum_loss += loss.cpu().data[0] * self.train_batch_size
+            sum_loss += loss.cpu().data.item() * self.train_batch_size
         self.to_cpu()
         return sum_loss / len(self.train_loader.dataset)
 
@@ -113,7 +113,7 @@ class Cifar10Trainer(object):
             y = self.model(x)
             # loss
             loss = self.model.calc_loss(y, t)
-            sum_loss += loss.cpu().data[0] * self.test_batch_size
+            sum_loss += loss.cpu().data.item() * self.test_batch_size
             # accuracy
             y = y.data.max(1, keepdim=True)[1]
             accuracy += y.eq(t.data.view_as(y)).cpu().sum()
