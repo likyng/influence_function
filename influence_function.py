@@ -1,7 +1,6 @@
 import six
 import utility
 from hvp import hvp
-from torch.autograd import Variable
 import torch.nn.functional as F
 from torch.autograd import grad
 
@@ -12,7 +11,6 @@ def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0, repea
 
     for i in utility.create_progressbar(repeat, desc='s_test'):
         for x, t in z_loader:
-            x, t = Variable(x, volatile=False), Variable(t, volatile=False)
             if gpu >= 0:
                 x, t = x.cuda(gpu), t.cuda(gpu)
             y = model(x)
@@ -26,7 +24,6 @@ def s_test(z_test, t_test, model, z_loader, gpu=-1, damp=0.01, scale=25.0, repea
 def grad_z(z, t, model, gpu=-1):
     model.eval()
     # initialize
-    z, t = Variable(z, volatile=False), Variable(t, volatile=False)
     if gpu >= 0:
         z, t = z.cuda(gpu), t.cuda(gpu)
         model.cuda(gpu)
