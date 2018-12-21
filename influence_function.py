@@ -1,6 +1,5 @@
 import six
 import utility
-from hvp import hvp
 import torch.nn.functional as F
 from torch.autograd import grad
 
@@ -30,6 +29,34 @@ def grad_z(z, t, model, gpu=-1):
     y = model(z)
     loss = model.calc_loss(y, t)
     return list(grad(loss, list(model.parameters()), create_graph=True))
+
+
+def hvp(y, w, v):
+    """Multiply the Hessians of y and w by v
+
+    Arguments:
+        y:
+        w:
+        v:
+
+    Returns:
+        return_grads: list of torch tensors, contains product of Hessian and v.
+
+    Raises:
+        ValueError: `y` and `w` have a different length."""
+    if len(w) != len(v):
+        raise(ValueError("w and v must have the same length."))
+
+    # First backprop
+    first_grads = grad(y, w, retain_graph=True, create_graph=True)
+    grad_v = 0
+    for g, v in zip(first_grads, v):
+        grad_v += torch.sum(g * v)
+
+    # Second backprop
+    return_grads =  grad(grad_v, w, create_graph=True)
+
+    return return_grads
 
 
 if __name__ == '__main__':
