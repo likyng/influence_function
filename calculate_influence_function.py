@@ -38,6 +38,7 @@ s_tests = []
 for i in six.moves.range(r):
     s_tests.append('{}/{}_{}.s_test'.format(s_test, s_tests_id, i))
 
+# Here currently the dataset size of MNIST
 grad_z = []
 grad_z_iter_len = 60000
 
@@ -54,7 +55,12 @@ e_s_test = [i / len(s_tests) for i in e_s_test]
 influence = []
 for i in utility.create_progressbar(grad_z_iter_len, desc='caluculating influence'):
     # original code: inf_tmp = -sum([torch.sum(k * j).data.numpy()[0] for k, j in six.moves.zip(grad_z[i], e_s_test)]) / n
-    inf_tmp = -sum([torch.sum(k * j).data.numpy() for k, j in six.moves.zip(grad_z[i], e_s_test)]) / n
+    # Calc Loss_up(z, z_test) = grad_z * s_test
+    inf_tmp = -sum(
+        [
+            torch.sum(k * j).data.numpy()
+            for k, j in six.moves.zip(grad_z[i], e_s_test)
+        ]) / n
     #for k, j in six.moves.zip(grad_z[i], e_s_test):
     #    tmp_sum = torch.sum(k * j)
     #    tmp_arr = tmp_sum.data.numpy()

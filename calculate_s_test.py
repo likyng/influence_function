@@ -55,11 +55,17 @@ if args['gpu'] >= 0:
 if debug is True:
     print(main.test_one_epoch())
 
+# loop over available test dataset samples
 for i in utility.create_progressbar(main.test_loader.dataset.test_data.shape[0], desc='z_test', start=start):
     z_test, t_test = main.test_loader.dataset[i]
     z_test = main.test_loader.collate_fn([z_test])
     t_test = main.test_loader.collate_fn([t_test])
+    # calculate one s_test per test dataset sample.
+    # Calculate it r times to be able avg over them later
     for ii in utility.create_progressbar(r, desc='r'):
+        #################
+        # TODO: Understand why s_test contains 8 torch tensors!?
+        #################
         s_test_vec = s_test(z_test, t_test, model, main.train_loader, gpu=args['gpu'], damp=damp, scale=scale, repeat=t)
         s_test_vec = [s.cpu() for s in s_test_vec]
         torch.save(s_test_vec, '{}/{}_{}.s_test'.format(main.save_path, i, ii))

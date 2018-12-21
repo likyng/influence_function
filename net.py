@@ -23,7 +23,11 @@ class Net(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
-        # IF CIFAR10 use this: return x
+        ##############################
+        # ATTENTION
+        # TODO: IF running on CIFAR10 use this instead:
+        # return x
+        ##############################
 
     def _count_parameters(self, shape):
         return functools.reduce(lambda a, b: a * b, shape)
@@ -32,6 +36,14 @@ class Net(nn.Module):
         return sum([self._count_parameters(p.data.shape) for p in self.parameters()])
 
     def calc_loss(self, y, t):
+        """Calculates the loss
+
+        Arguments:
+            y: torch tensor, input with size (minibatch, nr_of_classes)
+            t: torch tensor, target expected by loss of size (0 to nr_of_classes-1)
+
+        Returns:
+            loss: scalar, the loss"""
         y = F.log_softmax(y)
         loss = F.nll_loss(y, t, weight=None, size_average=True)
         return loss
