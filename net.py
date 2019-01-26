@@ -25,7 +25,7 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
         ##############################
         # ATTENTION
-        # TODO: IF running on CIFAR10 use this instead:
+        # TODO: IF running on CIFAR10 use this instead of log_softmax(x):
         # return x
         ##############################
 

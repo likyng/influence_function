@@ -55,12 +55,12 @@ if args['gpu'] >= 0:
 if debug is True:
     print(main.test_one_epoch())
 
-# loop over available test dataset samples
+# Loop over available test dataset samples
 for i in utility.create_progressbar(main.test_loader.dataset.test_data.shape[0], desc='z_test', start=start):
     z_test, t_test = main.test_loader.dataset[i]
     z_test = main.test_loader.collate_fn([z_test])
     t_test = main.test_loader.collate_fn([t_test])
-    # calculate one s_test per test dataset sample.
+    # Calculate one s_test per test dataset sample.
     # Calculate it r times to be able avg over them later
     for ii in utility.create_progressbar(r, desc='r'):
         #################
